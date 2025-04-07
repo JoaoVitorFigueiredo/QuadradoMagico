@@ -32,4 +32,8 @@ class Utils:
             else:
                 loss -= result-mean_sum
 
+<<<<<<< HEAD
         return loss
+=======
+        return loss
+>>>>>>> origin/main
