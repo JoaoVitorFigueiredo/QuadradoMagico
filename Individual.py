@@ -21,6 +21,11 @@ class Individual:
     def __str__(self):
         return self.__cube.__str__()
 
+    def __gt__(self, other):
+        return self.get_cube() >= other.get_cube()
+
+    def __int__(self):
+        return self.get_cube()
 
 class IndividualUtils:
     @staticmethod
