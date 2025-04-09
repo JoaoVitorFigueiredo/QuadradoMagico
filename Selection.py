@@ -2,7 +2,7 @@ import random
 
 
 class Selection:
-    def __init__(self, n_selected: int, threshold: float):
+    def __init__(self, n_selected: int, threshold: float = 0):
         # criar uma verificação se n_selected é um inteiro entre 2 e o número da população e
         self.n_selected = n_selected
         self.threshold = threshold
@@ -19,7 +19,7 @@ class Selection:
 
 
 class TournamentSelection (Selection):
-    def __init__(self, n_selected, threshold):
+    def __init__(self, n_selected, threshold=0):
         super().__init__(n_selected, threshold)
 
     # AINDA PRECISA DE TESTES
@@ -45,7 +45,7 @@ class TournamentSelection (Selection):
 
 
 class Elitism (Selection):
-    def __init__(self, n_selected, threshold):
+    def __init__(self, n_selected, threshold=0):
         super().__init__(n_selected, threshold)
 
     def apply_selection(self, candidates: list):
@@ -55,7 +55,7 @@ class Elitism (Selection):
 
 
 class WheelSelection (Selection):
-    def __init__(self, n_selected, threshold):
+    def __init__(self, n_selected, threshold=0):
         super().__init__(n_selected, threshold)
 
     def apply_selection(self, candidates: list):
