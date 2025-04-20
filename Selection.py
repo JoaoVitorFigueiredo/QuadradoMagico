@@ -1,82 +1,56 @@
 import random
 
-
 class Selection:
-    def __init__(self, n_selected: int, threshold: float = 0):
-        # criar uma verificação se n_selected é um inteiro entre 2 e o número da população e
+    def __init__(self, n_selected: int, threshold: float = float('-inf')):
+        assert n_selected >= 1
         self.n_selected = n_selected
-        self.threshold = threshold
+        self.threshold  = threshold
 
-    def apply_selection(self, candidates: list):
-        pass
+    def apply_threshold(self, pop):
+        return [ind for ind in pop if ind.get_fitness() >= self.threshold]
 
-    # Não sei se isso é algo bacana pra se usar mas fica aqui, dá pra replicar nas restantes funções debaixo
-    def apply_threshold(self, candidates: list):
-        for candidate in candidates:
-            if candidate.get_fitness() < self.threshold:
-                candidates.remove(candidate)
-        return candidates
+    def apply_selection(self, pop):
+        return self.apply_threshold(pop)[:self.n_selected]
 
 
-class TournamentSelection (Selection):
-    def __init__(self, n_selected, threshold=0):
+class TournamentSelection(Selection):
+    def __init__(self, n_selected: int, threshold: float = float('-inf'), tour_size: int = 2):
         super().__init__(n_selected, threshold)
+        assert tour_size >= 2
+        self.tour_size = tour_size
 
-    # AINDA PRECISA DE TESTES
-    def apply_selection(self, candidates: list):
-        if len(candidates) > self.n_selected:
-            winners = []
-            while len(candidates) > 0:
-                candidate_1 = random.choice(candidates)
-                candidates.remove(candidate_1)
-
-                candidate_2 = random.choice(candidates)
-                candidates.remove(candidate_2)
-
-                if candidate_1.get_fitness > candidate_2.get_fitness:
-                    winners.append(candidate_1)
-
-                else:
-                    winners.append(candidate_2)
-
-            return self.apply_selection(winners)
-
-        return candidates
-
-
-class Elitism (Selection):
-    def __init__(self, n_selected, threshold=0):
-        super().__init__(n_selected, threshold)
-
-    def apply_selection(self, candidates: list):
-        candidates.sort()
-        candidates = candidates[:self.n_selected+1]
-        return candidates
-
-
-class WheelSelection (Selection):
-    def __init__(self, n_selected, threshold=0):
-        super().__init__(n_selected, threshold)
-
-    def apply_selection(self, candidates: list):
+    def apply_selection(self, pop):
+        pool = self.apply_threshold(pop)
         selected = []
         while len(selected) < self.n_selected:
-            total = sum(candidates)
-            current_pos = 0
-            chosen_pos = random.uniform(0, total)
-
-            for candidate in candidates:
-                current_pos += candidate.get_fitness()/total
-                if chosen_pos <= current_pos:
-                    selected.append(candidate)
-                    candidates.remove(candidate)
-                    break
-
+            tour = random.sample(pool, min(self.tour_size, len(pool)))
+            winner = max(tour, key=lambda ind: ind.get_fitness())
+            selected.append(winner)
         return selected
 
 
+class Elitism(Selection):
+    def apply_selection(self, pop):
+        pool = self.apply_threshold(pop)
+        sorted_pop = sorted(pool, key=lambda ind: ind.get_fitness(), reverse=True)
+        return sorted_pop[:self.n_selected]
 
 
+class WheelSelection(Selection):
+    def apply_selection(self, pop):
+        pool = self.apply_threshold(pop)
+        fits = [ind.get_fitness() for ind in pool]
+        minf = min(fits)
+        weights = [(f - minf + 1e-6) for f in fits]
+        total   = sum(weights)
 
-
-
+        selected = []
+        while len(selected) < self.n_selected:
+            r = random.uniform(0, total)
+            cum = 0
+            for ind, w in zip(pool, weights):
+                cum += w
+                if r <= cum:
+                    selected.append(ind)
+                    break
+        return selected
