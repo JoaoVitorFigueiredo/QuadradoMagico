@@ -10,7 +10,8 @@ class GeneticAlgorithm:
                  max_generations: int = 1000,
                  crossover_rate: float = 0.8,
                  mutation_rate: float = 0.2,
-                 elitism_count: int = 1):
+                 elitism_count: int = 1,
+                 selector:int = 0):
         self.n_individuals   = n_individuals
         self.order           = order
         self.chromosome_len  = order * order
@@ -19,6 +20,14 @@ class GeneticAlgorithm:
         self.mutation_rate   = mutation_rate
         self.elitism_count   = elitism_count
         self.population      = []
+        if selector == 0:
+            self.selector = Elitism(4)
+        elif selector == 1:
+            self.selector = TournamentSelection(4)
+        elif selector == 2:
+            self.selector = WheelSelection(4)
+
+
 
     def start(self):
         """Run GA until a perfect magic square is found or max_generations."""
@@ -33,14 +42,13 @@ class GeneticAlgorithm:
                 return best
 
             # selection (pick self.n_individuals parents)
+
             selector = TournamentSelection(self.n_individuals, threshold= -999)
             parents  = selector.apply_selection(self.population)
 
             # build next generation
-            next_pop = []
-            # elitism
-            elites = Elitism(self.elitism_count).apply_selection(self.population)
-            next_pop.extend(elites)
+            next_pop = parents
+
 
             while len(next_pop) < self.n_individuals:
                 # crossover
@@ -78,12 +86,14 @@ if __name__ == "__main__":
     max_gens      = int(input("Máximo de gerações [e.g. 1000]: "))
     crossover_rate = float(input("Taxa de crossover [0.0–1.0]: "))
     mutation_rate  = float(input("Taxa de mutação [0.0–1.0]: "))
+    selector = int(input("Selecione a forma de seleção (1: Elitismo, 2:Torneio, 3: Roleta):"))
 
     ga = GeneticAlgorithm(
         n_individuals=pop_size,
         order=order,
         max_generations=max_gens,
         crossover_rate=crossover_rate,
-        mutation_rate=mutation_rate
+        mutation_rate=mutation_rate,
+        selector = selector
     )
     ga.start()
