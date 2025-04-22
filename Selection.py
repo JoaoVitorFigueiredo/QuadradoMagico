@@ -4,7 +4,7 @@ class Selection:
     def __init__(self, n_selected: int, threshold: float = float('-inf')):
         assert n_selected >= 1
         self.n_selected = n_selected
-        self.threshold  = threshold
+        self.threshold = threshold
 
     def apply_threshold(self, pop):
         return [ind for ind in pop if ind.get_fitness() >= self.threshold]
@@ -42,7 +42,7 @@ class WheelSelection(Selection):
         fits = [ind.get_fitness() for ind in pool]
         minf = min(fits)
         weights = [(f - minf + 1e-6) for f in fits]
-        total   = sum(weights)
+        total = sum(weights)
 
         selected = []
         while len(selected) < self.n_selected:

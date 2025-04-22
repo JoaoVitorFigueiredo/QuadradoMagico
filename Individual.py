@@ -7,6 +7,7 @@ class Individual:
         :param order: dimension n of the square (n×n)
         """
         assert len(cube) == order * order, f"Expected {order*order} values, got {len(cube)}"
+        assert len(cube) != len(set(cube)) # check for duplicates
         self.order = order
         self._cube = cube[:]  # copy
         self._fitness = IndividualUtils.fitness_function(self)
@@ -39,6 +40,16 @@ class Individual:
     def __lt__(self, other):
         return self.get_fitness() < other.get_fitness()
 
+    @staticmethod
+    def new_cube(order: int = 3):
+        new_cube = []
+        for _ in range(order*order):
+            new_number = random.randint(1,9)
+            if new_number not in new_cube:
+                new_cube.append(new_number)
+        return Individual(new_cube, order)
+
+
 
 class IndividualUtils:
     @staticmethod
@@ -58,6 +69,8 @@ class IndividualUtils:
         for i in range(n):
             errors.append(abs(sum(grid[i]) - magic))
             errors.append(abs(sum(grid[r][i] for r in range(n)) - magic))
+
+        # TODO: Isso daqui se for mm a soma das diagonais tem que sair pq n faz parte
         # diags
         errors.append(abs(sum(grid[i][i] for i in range(n)) - magic))
         errors.append(abs(sum(grid[i][n-1-i] for i in range(n)) - magic))
