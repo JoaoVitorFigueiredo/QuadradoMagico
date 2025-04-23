@@ -55,24 +55,31 @@ class IndividualUtils:
     @staticmethod
     def fitness_function(ind: Individual):
         """
-        A função fitness é o desvio total das somas negativo, para poder maximizar em 0
+        Fitness = -sum( | sum(row / col / diag) - magic |), where
+        magic = n * (n ^ 2 + 1) / 2
+        Perfect
+        square = > fitness = 0
         :param ind:
         :return:
         """
+        n = ind.order
         cube = ind.get_cube()
-        order = ind.order
-        sums = []
-        for i in range(0, len(cube), order):
-            sums.append(sum(cube[i:i+order]))
-        for i in range(order):
-            temp_sum = 0
-            for j in range(order):
-                temp_sum += cube[i+(j*order)]
-            sums.append(temp_sum)
+        # build n×n matrix
+        grid = [cube[i * n:(i + 1) * n] for i in range(n)]
+        magic = n * (n * n + 1) // 2
 
-        mean = sum(cube) / len(cube)
-        fitness = sum(abs(x - mean) for x in cube)
-        return -fitness
+        errors = []
+        # rows & cols
+        for i in range(n):
+            errors.append(abs(sum(grid[i]) - magic))
+            errors.append(abs(sum(grid[r][i] for r in range(n)) - magic))
+
+        # diags
+        errors.append(abs(sum(grid[i][i] for i in range(n)) - magic))
+        errors.append(abs(sum(grid[i][n - 1 - i] for i in range(n)) - magic))
+
+        loss = sum(errors)
+        return -loss
 
     @staticmethod
     def crossover_one_point(ind1: Individual, ind2: Individual):
@@ -93,30 +100,7 @@ class IndividualUtils:
         return Individual(child, order=ind1.order)
 
 
-"""
-        Fitness = -sum(|sum(row/col/diag) - magic|), where magic = n*(n^2+1)/2
-        Perfect square => fitness = 0
-        
-        n = ind.order
-        cube = ind.get_cube()
-        # build n×n matrix
-        grid = [cube[i*n:(i+1)*n] for i in range(n)]
-        magic = n * (n*n + 1) // 2
 
-        errors = []
-        # rows & cols
-        for i in range(n):
-            errors.append(abs(sum(grid[i]) - magic))
-            errors.append(abs(sum(grid[r][i] for r in range(n)) - magic))
-
-        # TODO: Isso daqui se for mm a soma das diagonais tem que sair pq n faz parte
-        # diags
-        errors.append(abs(sum(grid[i][i] for i in range(n)) - magic))
-        errors.append(abs(sum(grid[i][n-1-i] for i in range(n)) - magic))
-
-        loss = sum(errors)
-        return -loss
-        """
 
 if __name__ == "__main__":
     ind = Individual([1, 2, 3, 4, 5, 6, 7, 8, 9])
