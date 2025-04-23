@@ -41,6 +41,8 @@ class Individual:
     def __lt__(self, other):
         return self.get_fitness() < other.get_fitness()
 
+    #Enviei sem querer no commit, não tá nada testado
+
     @staticmethod
     def new_cube(order: int = 3):
         new_cube = []
