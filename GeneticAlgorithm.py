@@ -22,12 +22,13 @@ class GeneticAlgorithm:
         self.mutation_rate   = mutation_rate
         self.elitism_count   = elitism_count
         self.population      = []
+        n_parents = int(self.n_individuals / 20) if self.n_individuals/20 >= 2 else 2
         if selector == 1:
-            self.selector = Elitism(int(self.n_individuals/20))
+            self.selector = Elitism(n_parents)
         elif selector == 2:
-            self.selector = TournamentSelection(int(self.n_individuals/20))
+            self.selector = TournamentSelection(n_parents)
         elif selector == 3:
-            self.selector = WheelSelection(int(self.n_individuals/20))
+            self.selector = WheelSelection(n_parents)
 
         self.best_fitness = []
         self.avg_fitness = []
