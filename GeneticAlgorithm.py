@@ -20,6 +20,8 @@ class GeneticAlgorithm:
                  selector: int = 2,
                  early_stopping: bool = False,
                  patience: int = None):
+        self.convergence = None
+
         self.n_individuals   = n_individuals
         self.order           = order
         # max_generations is None when using early stopping only
@@ -56,6 +58,7 @@ class GeneticAlgorithm:
         return sum(ind.get_fitness() for ind in self.population) / len(self.population)
 
     def start(self):
+        self.solved
         self._init_population()
         best_so_far = float('-inf')
         no_improve = 0
@@ -78,6 +81,7 @@ class GeneticAlgorithm:
                     no_improve += 1
                 if no_improve >= self.patience:
                     print(f"Early stopping at generation {gen} after {self.patience} gens without improvement.")
+                    self.convergence = self.patience - gen
                     break
 
             # Max generation stopping
@@ -89,6 +93,7 @@ class GeneticAlgorithm:
             # Check perfect solution
             if current_best == 0:
                 print(f"SOLVED at generation {gen}")
+                self.convergence = gen
                 print(best)
                 break
 
@@ -178,3 +183,10 @@ if __name__ == "__main__":
         for gen, (best, avg) in enumerate(zip(ga.best_fitness, ga.avg_fitness), start=1):
             writer.writerow([gen, best, avg])
 
+
+    with open("test_results.csv", mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["pop_size", "selector", "convergence", "best_fitness", "mutation_rate", "crossover_rate"])  # Cabeçalhos
+
+
+        writer.writerow([gen, best, avg])
