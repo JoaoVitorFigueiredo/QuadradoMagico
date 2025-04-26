@@ -14,7 +14,6 @@ class GeneticAlgorithm:
                  n_individuals: int,
                  order: int,
                  max_generations: int = None,
-                 crossover_rate: float = 0.8,
                  mutation_rate: float = 0.2,
                  elitism_count: int = 1,
                  selector: int = 2,
@@ -26,7 +25,6 @@ class GeneticAlgorithm:
         self.order           = order
         # max_generations is None when using early stopping only
         self.max_generations = max_generations
-        self.crossover_rate  = crossover_rate
         self.mutation_rate   = mutation_rate
         self.elitism_count   = elitism_count
         self.early_stopping  = early_stopping
@@ -58,7 +56,6 @@ class GeneticAlgorithm:
         return sum(ind.get_fitness() for ind in self.population) / len(self.population)
 
     def start(self):
-        self.solved
         self._init_population()
         best_so_far = float('-inf')
         no_improve = 0
@@ -101,11 +98,8 @@ class GeneticAlgorithm:
             parents = self.selector.apply_selection(self.population)
             next_pop = Elitism(self.elitism_count).apply_selection(self.population)
             while len(next_pop) < self.n_individuals:
-                if random.random() < self.crossover_rate:
-                    p1, p2 = random.sample(parents, 2)
-                    child = IndividualUtils.crossover_one_point(p1, p2)
-                else:
-                    child = copy.deepcopy(random.choice(parents))
+                p1, p2 = random.sample(parents, 2)
+                child = IndividualUtils.crossover_one_point(p1, p2)
                 if random.random() < self.mutation_rate:
                     child.mutation()
                 next_pop.append(child)
@@ -130,7 +124,6 @@ if __name__ == "__main__":
         raise ValueError("n must be >=3 for a magic square.")
     pop_size = int(input("Tamanho da população: "))
     selector = int(input("Selecione seleção (1: Elitismo, 2: Torneio, 3: Roleta, 4: Torneio + Elitismo, 5: Roleta + Torneio): "))
-    crossover_rate = float(input("Taxa de crossover [0-1]: "))
     mutation_rate  = float(input("Taxa de mutação [0-1]: "))
 
     use_es = input("Usar early stopping? (s/n): ").strip().lower() == 's'
@@ -141,13 +134,12 @@ if __name__ == "__main__":
         patience = None
         max_gens = int(input("Máximo de gerações: "))
 
-    print(f"Params: Pop size: {pop_size}; Selector: {selector}; Cross-rate: {crossover_rate}; Mutation-rate: {mutation_rate}")
+    print(f"Params: Pop size: {pop_size}; Selector: {selector}; Mutation-rate: {mutation_rate}")
 
     ga = GeneticAlgorithm(
         n_individuals=pop_size,
         order=order,
         max_generations=max_gens,
-        crossover_rate=crossover_rate,
         mutation_rate=mutation_rate,
         selector=selector,
         early_stopping=use_es,
