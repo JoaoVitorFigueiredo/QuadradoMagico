@@ -5,6 +5,10 @@ from Selection import TournamentSelection, Elitism, WheelSelection, HybridSelect
 
 import matplotlib.pyplot as plt
 
+import time
+
+import csv
+
 class GeneticAlgorithm:
     def __init__(self,
                  n_individuals: int,
@@ -132,6 +136,8 @@ if __name__ == "__main__":
         patience = None
         max_gens = int(input("Máximo de gerações: "))
 
+    print(f"Params: Pop size: {pop_size}; Selector: {selector}; Cross-rate: {crossover_rate}; Mutation-rate: {mutation_rate}")
+
     ga = GeneticAlgorithm(
         n_individuals=pop_size,
         order=order,
@@ -142,7 +148,12 @@ if __name__ == "__main__":
         early_stopping=use_es,
         patience=patience
     )
+
+    start_time = time.perf_counter()
     ga.start()
+    end_time = time.perf_counter()
+
+    print(f"Execution time: {end_time - start_time}")
 
     # Plot
     gens = list(range(1, len(ga.best_fitness)+1))
@@ -154,3 +165,16 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid()
     plt.savefig("graph.png")
+
+    plt.ylim(-200, 0)
+
+    plt.savefig("graph-ylimit.png")
+
+    #para fazer gráficos melhores mais fácil
+    with open("fitness_results.csv", mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["geração", "melhor", "média"])  # Cabeçalhos
+
+        for gen, (best, avg) in enumerate(zip(ga.best_fitness, ga.avg_fitness), start=1):
+            writer.writerow([gen, best, avg])
+
