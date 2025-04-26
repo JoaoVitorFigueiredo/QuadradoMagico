@@ -9,12 +9,12 @@ pop_size = int(input("Tamanho da população: "))
 selector = int(input("Selecione seleção (1: Elitismo, 2: Torneio, 3: Roleta, 4: Torneio + Elitismo, 5: Roleta + Torneio): "))
 mutation_rate  = float(input("Taxa de mutação [0-1]: "))
 
-use_es = input("Usar early stopping? (s/n): ").strip().lower() == 's'
 patience = int(input("Paciencia (gerações sem melhora): "))
 max_gens = None
 
 
 print(f"Params: Pop size: {pop_size}; Selector: {selector}; Mutation-rate: {mutation_rate}")
+
 with open("test_results.csv", mode="w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)
     writer.writerow(
